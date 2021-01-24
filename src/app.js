@@ -1,17 +1,14 @@
-// Node modules and variables
+// Node modules and constants
 const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
 const https = require("https");
-require('dotenv').config({ path: '../src/config/.env'});
-const app = express();
+require('dotenv').config({ path: '../src/config/.env' });
 
-// load .env variables
+const app = express();
 const chimp_api_key = process.env.API_KEY;
 const list_id = process.env.LIST_ID;
 const username = process.env.USERNAME;
-
-console.log(chimp_api_key);
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,21 +18,19 @@ app.get("/", function (req, res) {
 });
 
 app.post("/", function (req, res) {
+
+   // obtain input from form
    const firstName = req.body.firstName;
    const lastName = req.body.lastName;
    const email = req.body.emailAddress;
 
    // package data user input data from signup
    const data = {
-      members: [ {
-            email_address: email,
-            status: "subscribed",
-            merge_fields: {
-               FNAME: firstName,
-               LNAME: lastName,
-            }
-         }
-      ]
+      members: [{
+         email_address: email, 
+         status: "subscribed",
+         merge_fields: { FNAME: firstName, LNAME: lastName }
+      }]
    };
 
    const jsonData = JSON.stringify(data);
@@ -45,7 +40,7 @@ app.post("/", function (req, res) {
       auth: username + ":" + chimp_api_key,
    }
 
-   // create Mailchimp request
+   // create mailchimp API request
    const request = https.request(url, options, function (response) {
 
       if (response.statusCode === 200)
