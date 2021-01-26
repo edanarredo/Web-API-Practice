@@ -10,7 +10,7 @@ const chimp_api_key = process.env.API_KEY;
 const list_id = process.env.LIST_ID;
 const username = process.env.USERNAME;
 
-app.use(express.static("public"));
+app.use(express.static("../public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", function (req, res) {
