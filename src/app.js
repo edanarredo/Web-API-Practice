@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
 const https = require("https");
+
 require('dotenv').config({ path: '../src/config/.env' });
 
 const app = express();
@@ -13,11 +14,12 @@ const username = process.env.USERNAME;
 app.use(express.static("../public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", function (req, res) {
+
+app.get("/", (req, res) => {
    res.sendFile(__dirname + "/signup.html");
 });
 
-app.post("/", function (req, res) {
+app.post("/", (req, res) => {
 
    // obtain input from form
    const firstName = req.body.firstName;
@@ -27,7 +29,7 @@ app.post("/", function (req, res) {
    // package data user input data from signup
    const data = {
       members: [{
-         email_address: email, 
+         email_address: email,
          status: "subscribed",
          merge_fields: { FNAME: firstName, LNAME: lastName }
       }]
@@ -40,13 +42,17 @@ app.post("/", function (req, res) {
       auth: username + ":" + chimp_api_key,
    }
 
+   app.post("/failure", (req, res) => {
+      res.redirect("/");
+   });
+
    // create mailchimp API request
    const request = https.request(url, options, function (response) {
 
       if (response.statusCode === 200)
-         res.send("Successfully subscribed!");
+         res.sendFile(__dirname + "/success.html");
       else
-         res.send("Something went wrong! Try again :(");
+         res.sendFile(__dirname + "/failure.html");
 
       response.on("data", function (data) {
          console.log(JSON.parse(data));
@@ -57,6 +63,6 @@ app.post("/", function (req, res) {
 
 });
 
-app.listen(3000, function () {
+app.listen(process.env.PORT || 3000, () => {
    console.log("Server is running on port 3000");
 });
